@@ -492,7 +492,8 @@ def main():
                 train_on_negative=args.models[model_name].train_on_negative,
                 use_dpo_loss=args.use_dpo_loss,
                 is_chat_model=is_chat_model,
-                output_length=int(args.output_length),
+                # train.output_length is optional (e.g. the demo config omits it).
+                output_length=int(args.output_length) if args.output_length is not None else None,
                 model_name=args.model_name,
                 max_num_of_examples=args.max_num_of_examples,
                 steering_prompt_type=args.models[model_name].steering_prompt_type,
