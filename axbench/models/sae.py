@@ -174,7 +174,8 @@ class GemmaScopeSAE(Model):
             f"{dump_dir}/{model_name}.pt"
         )
         pt_params = {k: v.to(self.device) for k, v in params.items()}
-        self.make_model(low_rank_dimension=params['W_enc'].shape[1], **kwargs)
+        kwargs["low_rank_dimension"] = params['W_enc'].shape[1]
+        self.make_model(**kwargs)
         if isinstance(self.ax, SubspaceIntervention) or isinstance(self.ax, AdditionIntervention):
             self.ax.proj.weight.data = pt_params['W_dec']
         else:
