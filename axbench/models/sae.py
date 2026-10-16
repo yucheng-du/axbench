@@ -191,14 +191,23 @@ class GemmaScopeSAE(Model):
             # we use max/mean activation from AxBench dataset.
             return super().pre_compute_mean_activations(dump_dir, **kwargs)
 
-        # Loop over all praqut files in dump_dir.
+        # Prefer existing latent outputs, which may be absent for steering runs.
+        try:
+            latent_files = os.listdir(dump_dir)
+        except FileNotFoundError:
+            latent_files = []
         sae_links = []
-        for file in os.listdir(dump_dir):
+        for file in latent_files:
             if file.endswith(".parquet") and file.startswith("latent_data"):
                 df = pd.read_parquet(os.path.join(dump_dir, file))
                 # sort by concept_id from small to large and enumerate through all concept_ids.
                 for sae_link in sorted(df["sae_link"].unique()):
                     sae_links += [sae_link]
+
+        if not sae_links:
+            sae_links = [feature["ref"] for feature in (kwargs.get("metadata") or [])]
+        if not sae_links:
+            raise ValueError("No SAE references found in latent data or metadata.")
 
         model_name, sae_name = sae_links[0].split("/")[-3], sae_links[0].split("/")[-2]
         max_activations = {} # sae_id to max_activation
