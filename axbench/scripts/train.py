@@ -536,6 +536,9 @@ def main():
         metadata_entries = []
         for r in range(world_size):
             metadata_path = os.path.join(dump_dir, f"rank_{r}_{METADATA_FILE}")
+            # Empty partitions never save metadata; keep any existing resume output.
+            if not df_list_per_rank[r] and not os.path.exists(metadata_path):
+                continue
             with open(metadata_path, "r") as f:
                 for line in f:
                     metadata_entry = json.loads(line)
