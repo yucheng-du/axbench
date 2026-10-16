@@ -14,3 +14,12 @@ Once the dataset test passes, you can run the unit tests for functonal modules.
 ```bash
 python -m unittest discover -s axbench/tests/unit_tests
 ```
+
+## Offline prompt intervention regression
+
+This pytest test uses a random tiny Llama, a local SAE checkpoint, and a single
+Gloo rank to check generation, decoding, and parquet output without downloads:
+
+```bash
+python -m pytest -q tests/test_intervene_on_prompt.py
+```
